@@ -161,7 +161,7 @@ class FFISubgridModel{
     torch::Tensor F4_final = torch::einsum("niajb,nmjb->nmia", {y, F4_initial});
 
     // make sure the result is physical
-    F4_final = restrict_to_physical(F4_final);
+    //F4_final = restrict_to_physical(F4_final);
 
     return F4_final;
   }

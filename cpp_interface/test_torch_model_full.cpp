@@ -9,10 +9,11 @@
 using namespace H5;
 using namespace std;
 using namespace std::chrono;
-const H5std_string INFILE_NAME("model_rl2_orthonormal.h5"); // input file
+const H5std_string INFILE_NAME("/nucastro3/jfroust/Old_NSM/model_rl0_orthonormal.h5"); // input file
+//const H5std_string INFILE_NAME("/nucastro3/jfroust/M1-NuLib/model_rl1_orthonormal.h5");
 
-const int xgrid = 256;
-const int ygrid = 256;
+const int xgrid = 1;
+const int ygrid = 1;
 const int zgrid = 1;
 
 const int ngridzones = xgrid*ygrid*zgrid;
@@ -60,18 +61,7 @@ int main(int argc, const char* argv[]){
    }
    }
   }
-/*  for (i = 0; i < xgrid; i++)
-  {
-  for (j = 0; j < ygrid; j++)
-  {
-  for (k = 0; k < zgrid; k++)
-  {
-   ne_in[i][j][k] = 0.0;
-   na_in[i][j][k] = 0.0;
-   nx_in[i][j][k] = 0.0;
-  }
-  }
-  }*/
+
   //------------------simulation data-------------------//
    
   H5File file (INFILE_NAME, H5F_ACC_RDONLY); 
@@ -92,9 +82,9 @@ int main(int argc, const char* argv[]){
    hsize_t offset[4]; //hyperslab offset in the file
    hsize_t count[4]; //size of the hyperslab in the file;
    offset[0] = 0;
-   offset[1] = 0;
-   offset[2] = 0;
-   offset[3] = 129;
+   offset[1] = 100;
+   offset[2] = 100;
+   offset[3] = 50;
    count[0] = 3; //3 --> x,y,z given by the first index of the dataset
    count[1] = xgrid; 
    count[2] = ygrid;
@@ -136,9 +126,9 @@ int main(int argc, const char* argv[]){
 
    hsize_t offsett[3]; // hyperslab offset in the file
    hsize_t countt[3];  // size of the hyperslab in the file
-   offsett[0] = 0; 
-   offsett[1] = 0; 
-   offsett[2] = 129; 
+   offsett[0] = 100; 
+   offsett[1] = 100; 
+   offsett[2] = 50; 
    countt[0] = xgrid;
    countt[1] = ygrid;
    countt[2] = zgrid;
@@ -180,10 +170,8 @@ int main(int argc, const char* argv[]){
    DataSpace memspace7(3, dimsmt);
    memspace7.selectHyperslab(H5S_SELECT_SET, count_outt, offset_outt);
    d7.read(delta, PredType::NATIVE_DOUBLE, memspace7, dataspace7);
-
  // }
- 
-  /*for (i = 0; i < xgrid; i++)
+   /*for (i = 0; i < xgrid; i++)
    {
    for (j = 0; j < ygrid; j++)
    {
@@ -236,16 +224,16 @@ int main(int argc, const char* argv[]){
   
   i++;
   } } }
-  //cout << endl;
-  //cout << "input" << F4_in << endl;
+  cout << endl;
+  cout << "input" << F4_in << endl;
  
   // put the input through the model maxi times
   auto F4_out = F4_in;
   torch::Tensor X, y;
   
-  int maxi(0);
-  maxi = 10;
-  cout << "Number of iterations (> 0)?" << maxi << endl;
+  int maxi(1);
+  cout << "Number of iterations =" << maxi << endl;
+  //cout << "Number of iterations (> 0)?" << maxi << endl;
   //cin >> maxi;
   
   cout << "Start of ML calculation" << endl;
@@ -266,6 +254,7 @@ int main(int argc, const char* argv[]){
     {
     if(delta[j][l][k] <= 0.){
         // If no crossing, no transformation
+        cout << "No crossing" << endl;
         F4_out.index_put_({i, Slice(), Slice(), Slice()}, (F4_in.index({i, Slice(), Slice(), Slice()})));
     }
     i++;
@@ -279,8 +268,7 @@ int main(int argc, const char* argv[]){
   cout << "Duration of ML calculation: " << duration.count() << " ms" << endl;
   
   cout << "output" << F4_out << endl;
- // assert(torch::allclose(output, F4_expected, 1e-2, 1e-2));
  
- torch::save({F4_in, F4_out}, "tensor_rl2_z130.pt");
+ torch::save({F4_in, F4_out}, "tensor.pt");
  return 0;
 }

@@ -13,3 +13,7 @@ Then, in build (where model_cpu must be copied!)
 or if you don't copy the file
 
 ./test_torch_model ../cpp_interface/model_cpu.ptc
+
+
+In addition, to handle memory issues, one can use
+ulimit -s unlimited

@@ -13,10 +13,11 @@ using namespace std::chrono;
 const H5std_string INFILE_NAME("/nucastro3/jfroust/M1-NuLib/model_rl1_orthonormal.h5");
 
 const int xgrid = 256;
-const int ygrid = 256;
-const int zgrid = 1;
+const int ygrid = 1;
+const int zgrid = 256;
 
-const int zindex = 129;
+const int yindex = 129;
+const int zindex = 0;
 
 const int ngridzones = xgrid*ygrid*zgrid;
 //======//
@@ -85,7 +86,7 @@ int main(int argc, const char* argv[]){
    hsize_t count[4]; //size of the hyperslab in the file;
    offset[0] = 0;
    offset[1] = 0;
-   offset[2] = 0;
+   offset[2] = yindex;
    offset[3] = zindex;
    count[0] = 3; //3 --> x,y,z given by the first index of the dataset
    count[1] = xgrid; 
@@ -129,7 +130,7 @@ int main(int argc, const char* argv[]){
    hsize_t offsett[3]; // hyperslab offset in the file
    hsize_t countt[3];  // size of the hyperslab in the file
    offsett[0] = 0; 
-   offsett[1] = 0; 
+   offsett[1] = yindex; 
    offsett[2] = zindex; 
    countt[0] = xgrid;
    countt[1] = ygrid;
@@ -234,7 +235,7 @@ int main(int argc, const char* argv[]){
   torch::Tensor X, y;
   
   int maxi(1);
-  cout << "Number of iterations =" << maxi << endl;
+  cout << "Number of iterations = " << maxi << endl;
   //cout << "Number of iterations (> 0)?" << maxi << endl;
   //cin >> maxi;
   
@@ -246,6 +247,7 @@ int main(int argc, const char* argv[]){
     y = model.predict_y(X);
     F4_out = model.F4_from_y(F4_out, y);
     
+    /*
     // Remove changes when no instability expected
     i = 0;
     for (j = 0; j < xgrid; j++)
@@ -260,7 +262,7 @@ int main(int argc, const char* argv[]){
         F4_out.index_put_({i, Slice(), Slice(), Slice()}, (F4_in.index({i, Slice(), Slice(), Slice()})));
     }
     i++;
-    } } }
+    } } }*/
   }
   
   cout << "End of ML calculation" << endl;
@@ -271,6 +273,6 @@ int main(int argc, const char* argv[]){
   
   //cout << "output" << F4_out << endl;
  
- torch::save({F4_in, F4_out}, "tensor_rl1_z129.pt");
+ torch::save({F4_in, F4_out}, "tensor_rl1_y129_nomask.pt");
  return 0;
 }

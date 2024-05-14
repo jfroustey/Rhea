@@ -9,15 +9,16 @@
 using namespace H5;
 using namespace std;
 using namespace std::chrono;
-//const H5std_string INFILE_NAME("/nucastro3/jfroust/Old_NSM/model_rl0_orthonormal.h5"); // input file
-const H5std_string INFILE_NAME("/nucastro3/jfroust/M1-NuLib/model_rl1_orthonormal.h5");
+const H5std_string INFILE_NAME("/nucastro3/jfroust/Old_NSM/model_rl0_orthonormal.h5"); // input file
+//const H5std_string INFILE_NAME("/nucastro3/jfroust/M1-NuLib/model_rl1_orthonormal.h5");
 
-const int xgrid = 256;
+const int xgrid = 1;//256
 const int ygrid = 1;
-const int zgrid = 256;
+const int zgrid = 1;//256
 
-const int yindex = 129;
-const int zindex = 0;
+const int xindex = 136;
+const int yindex = 100;//129
+const int zindex = 80;
 
 const int ngridzones = xgrid*ygrid*zgrid;
 //======//
@@ -85,7 +86,7 @@ int main(int argc, const char* argv[]){
    hsize_t offset[4]; //hyperslab offset in the file
    hsize_t count[4]; //size of the hyperslab in the file;
    offset[0] = 0;
-   offset[1] = 0;
+   offset[1] = xindex;
    offset[2] = yindex;
    offset[3] = zindex;
    count[0] = 3; //3 --> x,y,z given by the first index of the dataset
@@ -129,7 +130,7 @@ int main(int argc, const char* argv[]){
 
    hsize_t offsett[3]; // hyperslab offset in the file
    hsize_t countt[3];  // size of the hyperslab in the file
-   offsett[0] = 0; 
+   offsett[0] = xindex; 
    offsett[1] = yindex; 
    offsett[2] = zindex; 
    countt[0] = xgrid;
@@ -227,8 +228,8 @@ int main(int argc, const char* argv[]){
   
   i++;
   } } }
-  //cout << endl;
-  //cout << "input" << F4_in << endl;
+  cout << endl;
+  cout << "input" << F4_in << endl;
  
   // put the input through the model maxi times
   auto F4_out = F4_in;
@@ -247,7 +248,7 @@ int main(int argc, const char* argv[]){
     y = model.predict_y(X);
     F4_out = model.F4_from_y(F4_out, y);
     
-    /*
+    
     // Remove changes when no instability expected
     i = 0;
     for (j = 0; j < xgrid; j++)
@@ -262,7 +263,7 @@ int main(int argc, const char* argv[]){
         F4_out.index_put_({i, Slice(), Slice(), Slice()}, (F4_in.index({i, Slice(), Slice(), Slice()})));
     }
     i++;
-    } } }*/
+    } } }
   }
   
   cout << "End of ML calculation" << endl;
@@ -271,8 +272,8 @@ int main(int argc, const char* argv[]){
   
   cout << "Duration of ML calculation: " << duration.count() << " ms" << endl;
   
-  //cout << "output" << F4_out << endl;
+  cout << "output" << F4_out << endl;
  
- torch::save({F4_in, F4_out}, "tensor_rl1_y129_nomask.pt");
+ //torch::save({F4_in, F4_out}, "tensor_rl1_y129.pt");
  return 0;
 }

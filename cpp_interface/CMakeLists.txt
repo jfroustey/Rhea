@@ -29,7 +29,7 @@ message(STATUS "    HDF5 libraries: ${HDF5_LIBRARIES}")
 message(STATUS "    HDF5 include dirs: ${HDF5_INCLUDE_DIRS}")
 
 # Program executable
-add_executable(test_torch_model test_torch_model_full.cpp)
+add_executable(test_torch_model test_torch_model_main.cpp)
 
 target_link_libraries(test_torch_model "${TORCH_LIBRARIES}" "${HDF5_LIBRARIES}")
 set_property(TARGET test_torch_model PROPERTY CXX_STANDARD 17)
